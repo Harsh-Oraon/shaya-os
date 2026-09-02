@@ -3,7 +3,7 @@
 
 iso_name="shaya"
 iso_label="SHAYA_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="SHAYA OS <https://Github.com/Harsh-Oraon/shaya-os>"
+iso_publisher="SHAYA OS <https://github.com/Harsh-Oraon/shaya-os>"
 iso_application="SHAYA OS Live/install DVD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
