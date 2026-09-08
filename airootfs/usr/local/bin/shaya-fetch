@@ -2,26 +2,27 @@
 # shaya-fetch — SHAYA OS's own system info tool
 
 GREEN='\033[0;32m'
+BRIGHT_GREEN='\033[1;32m'
+DIM='\033[2m'
 RESET='\033[0m'
 
 # --- Gather live system info ---
-hostname=$(hostname)
+host=$(uname -n)
 kernel=$(uname -r)
 uptime_str=$(uptime -p 2>/dev/null | sed 's/^up //')
 shell_name=$(basename "$SHELL")
+pkg_count=$(pacman -Q 2>/dev/null | wc -l)
 
-# Memory: /proc/meminfo is in kB, convert to MB
 mem_total_kb=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 mem_avail_kb=$(awk '/MemAvailable/ {print $2}' /proc/meminfo)
 mem_used_kb=$((mem_total_kb - mem_avail_kb))
 mem_used_mb=$((mem_used_kb / 1024))
 mem_total_mb=$((mem_total_kb / 1024))
 
-# CPU model name, first match only
 cpu_model=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
 
 # --- Print it ---
-printf "${GREEN}"
+printf "${BRIGHT_GREEN}"
 cat << 'ART'
  ███████╗██╗  ██╗ █████╗ ██╗   ██╗ █████╗ 
  ██╔════╝██║  ██║██╔══██╗╚██╗ ██╔╝██╔══██╗
@@ -30,13 +31,20 @@ cat << 'ART'
  ███████║██║  ██║██║  ██║   ██║   ██║  ██║
  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 ART
-printf "${RESET}"
+printf "${RESET}${DIM}   Arch-based. Minimal. Yours to break.${RESET}\n\n"
 
-echo "-------------------------------------------"
-echo "Host:    $hostname"
-echo "Kernel:  $kernel"
-echo "Uptime:  ${uptime_str:-just booted}"
-echo "Shell:   $shell_name"
-echo "CPU:     $cpu_model"
-echo "Memory:  ${mem_used_mb}MB / ${mem_total_mb}MB"
-echo "-------------------------------------------"
+line() {
+  # $1 = label, $2 = value
+  printf "  ${GREEN}%-10s${RESET} %s\n" "$1" "$2"
+}
+
+printf "${BRIGHT_GREEN}  ╭─────────────────────────────────────╮${RESET}\n"
+line "OS"       "SHAYA OS (Arch-based)"
+line "Host"     "$host"
+line "Kernel"   "$kernel"
+line "Uptime"   "${uptime_str:-just booted}"
+line "Shell"    "$shell_name"
+line "Packages" "$pkg_count"
+line "CPU"      "$cpu_model"
+line "Memory"   "${mem_used_mb}MB / ${mem_total_mb}MB"
+printf "${BRIGHT_GREEN}  ╰─────────────────────────────────────╯${RESET}\n"
