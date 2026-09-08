@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# shaya-fetch — SHAYA OS's own system info tool
+
+GREEN='\033[0;32m'
+RESET='\033[0m'
+
+# --- Gather live system info ---
+hostname=$(hostname)
+kernel=$(uname -r)
+uptime_str=$(uptime -p 2>/dev/null | sed 's/^up //')
+shell_name=$(basename "$SHELL")
+
+# Memory: /proc/meminfo is in kB, convert to MB
+mem_total_kb=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+mem_avail_kb=$(awk '/MemAvailable/ {print $2}' /proc/meminfo)
+mem_used_kb=$((mem_total_kb - mem_avail_kb))
+mem_used_mb=$((mem_used_kb / 1024))
+mem_total_mb=$((mem_total_kb / 1024))
+
+# CPU model name, first match only
+cpu_model=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
+
+# --- Print it ---
+printf "${GREEN}"
+cat << 'ART'
+ ███████╗██╗  ██╗ █████╗ ██╗   ██╗ █████╗ 
+ ██╔════╝██║  ██║██╔══██╗╚██╗ ██╔╝██╔══██╗
+ ███████╗███████║███████║ ╚████╔╝ ███████║
+ ╚════██║██╔══██║██╔══██║  ╚██╔╝  ██╔══██║
+ ███████║██║  ██║██║  ██║   ██║   ██║  ██║
+ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+ART
+printf "${RESET}"
+
+echo "-------------------------------------------"
+echo "Host:    $hostname"
+echo "Kernel:  $kernel"
+echo "Uptime:  ${uptime_str:-just booted}"
+echo "Shell:   $shell_name"
+echo "CPU:     $cpu_model"
+echo "Memory:  ${mem_used_mb}MB / ${mem_total_mb}MB"
+echo "-------------------------------------------"
