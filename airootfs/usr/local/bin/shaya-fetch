@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # shaya-fetch — SHAYA OS's own system info tool
 
-GREEN='\033[0;32m'
-BRIGHT_GREEN='\033[1;32m'
+# True-color (24-bit RGB) escape codes — immune to terminal theme remapping,
+# unlike the standard 16-color \033[32m style codes.
+GREEN='\033[38;2;0;200;60m'          # slightly softer than the bright accent
+BRIGHT_GREEN='\033[38;2;0;255;65m'   # Matrix-style phosphor green
 DIM='\033[2m'
 RESET='\033[0m'
 
@@ -34,7 +36,6 @@ ART
 printf "${RESET}${DIM}   Arch-based. Minimal. Yours to break.${RESET}\n\n"
 
 line() {
-  # $1 = label, $2 = value
   printf "  ${GREEN}%-10s${RESET} %s\n" "$1" "$2"
 }
 
